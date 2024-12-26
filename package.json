@@ -1,0 +1,21 @@
+{
+  "name": "mongo",
+  "module": "inde.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch run index.js",
+    "build": "bun index.js"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@koa/router": "^13.1.0",
+    "koa": "^2.15.3",
+    "koa-bodyparser": "^4.4.1",
+    "mongodb": "^6.12.0"
+  }
+}
