@@ -1,5 +1,12 @@
-class ResponseFormat {
-  static success(data = null, message = "success") {
+interface ResponseFormat<T> {
+  code: number;
+  message: string;
+  data: T | null;
+  timestamp: number;
+}
+
+class ResponseFormat<T> {
+  static success<T>(data: T | null = null, message = "success") {
     return {
       code: 0,
       message,
