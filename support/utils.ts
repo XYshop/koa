@@ -1,23 +1,25 @@
-import fs from "fs";
-import path from "path";
+import { join, dirname } from "path";
+import { readdirSync, readFileSync, writeFileSync } from "fs";
+import { fileURLToPath } from "url";
 import crypto from "crypto";
-import type Koa from "koa";
+import type Application from "koa";
 
-const routesDir = path.join(__dirname, "../routes");
+const routesDir = join(dirname(fileURLToPath(import.meta.url)), "../routes");
 
-export function getRoutes(App: Koa) {
-  fs.readdirSync(routesDir).forEach(async (file) => {
-    const name = file.replace(".ts", "");
-    const route = await import(path.join(routesDir, name));
+export async function getRoutes(App: Application) {
+  const files = readdirSync(routesDir).filter((f) => f.endsWith(".ts"));
 
+  for (const file of files) {
+    const routePath = join(routesDir, file);
+    const route = await import(routePath);
     App.use(route.default.routes()).use(route.default.allowedMethods());
-  });
+  }
 }
 
 export function loadKeys() {
   try {
-    const privateKey = fs.readFileSync("private.key");
-    const publicKey = fs.readFileSync("public.key");
+    const privateKey = readFileSync("private.key");
+    const publicKey = readFileSync("public.key");
     return { privateKey, publicKey };
   } catch (err) {
     const { privateKey, publicKey } = generateKeyPair();
@@ -43,9 +45,9 @@ function generateKeyPair() {
 
 function saveKeys(privateKey: string, publicKey: string) {
   try {
-    fs.writeFileSync("private.key", privateKey);
-    fs.writeFileSync("public.key", publicKey);
+    writeFileSync("private.key", privateKey);
+    writeFileSync("public.key", publicKey);
   } catch (err) {
-    console.error(err, "Error saving keys");
+    throw new Error("Error saving keys", err);
   }
 }
